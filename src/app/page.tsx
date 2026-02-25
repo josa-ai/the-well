@@ -187,7 +187,7 @@ export default function HomePage() {
             </div>
             <div className="order-1 lg:order-2 relative overflow-hidden rounded-2xl">
               <Image
-                src="https://placehold.co/800x600/1B4D6E/FAFAF7"
+                src="/images/event-2.jpeg"
                 alt="Community programming at The Well"
                 width={800}
                 height={600}
@@ -262,6 +262,85 @@ export default function HomePage() {
                 </footer>
               </blockquote>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Media Coverage Section */}
+      <section className="bg-surface py-20 sm:py-28">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <span className="text-xs font-semibold uppercase tracking-wider text-secondary font-[family-name:var(--font-inter)]">
+              In the Press
+            </span>
+            <h2 className="mt-3 font-[family-name:var(--font-playfair)] text-3xl sm:text-4xl font-bold text-text">
+              Media Coverage
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
+            {/* Summary */}
+            <div>
+              <h3 className="font-[family-name:var(--font-playfair)] text-2xl font-bold text-text">
+                The Well Helps Entrepreneurs While Bringing Economic Activity to
+                Lakeland&apos;s Midtown
+              </h3>
+              <p className="mt-2 text-sm font-medium text-secondary font-[family-name:var(--font-inter)]">
+                ABC Action News &middot; Tampa Bay 28
+              </p>
+              <p className="mt-6 text-text-muted font-[family-name:var(--font-inter)] leading-relaxed">
+                ABC Action News spotlighted The Well as a $1.3 million business
+                center in Lakeland&apos;s underserved midtown neighborhood,
+                established as a Lakeland Community Redevelopment Agency project.
+                Founded by Dr. Sallie Stone, The Well focuses on helping people
+                of color, women, and veterans start or expand businesses through
+                workshops, seminars, training programs, and connections with
+                banks that support small business growth.
+              </p>
+              <p className="mt-4 text-text-muted font-[family-name:var(--font-inter)] leading-relaxed">
+                Since opening, The Well has assisted nearly 100 business owners.
+                Artist Kent McAllister credits the facility with providing
+                &ldquo;exposure&rdquo; and &ldquo;networking power&rdquo; he
+                otherwise wouldn&apos;t have accessed&mdash;after connecting with
+                the center, he painted his first mural and sold over 70 artwork
+                pieces.
+              </p>
+              <a
+                href="https://www.tampabay28.com/news/region-polk/the-well-helps-entrepreneurs-while-bringing-economic-activity-to-lakelands-midtown"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-light font-[family-name:var(--font-inter)]"
+                style={{ transition: "color 0.2s" }}
+              >
+                Read Full Article
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  />
+                </svg>
+              </a>
+            </div>
+
+            {/* Video Embed */}
+            <div className="relative rounded-2xl overflow-hidden shadow-elevated" style={{ paddingBottom: "56.25%" }}>
+              <iframe
+                title="ABC Action News: The Well helps entrepreneurs in Lakeland's midtown"
+                className="absolute top-0 left-0 w-full h-full"
+                src="https://assets.scrippsdigital.com/cms/video/player.html?video=https://content.uplynk.com/3a50229eea6141848877ef30958f82e7.m3u8&mp4=https://cf.cdn.uplynk.com/ause/slices/3a5/45bf940c346f431c9be273b8942ab6eb/3a50229eea6141848877ef30958f82e7/3a50229eea6141848877ef30958f82e7_e.mp4&autoplay=false&purl=/news/region-polk/the-well-helps-entrepreneurs-while-bringing-economic-activity-to-lakelands-midtown&poster=https://cf.cdn.uplynk.com/ause/slices/3a5/45bf940c346f431c9be273b8942ab6eb/3a50229eea6141848877ef30958f82e7/poster_01d795afe8c44c90963c6cfd8c2132c9.jpg&title=The%20Well%20helps%20entrepreneurs%20while%20bringing%20economic%20activity%20to%20Lakeland%E2%80%99s%20midtown&mute=0&host=tampabay28.com&s=wfts&env=production"
+                allow="fullscreen"
+                allowFullScreen
+                frameBorder="0"
+                scrolling="no"
+              />
+            </div>
           </div>
         </div>
       </section>
