@@ -13,13 +13,11 @@ const founders = [
     name: "Dr. Sallie Stone",
     role: "Co-Founder",
     bio: "With over twenty years of experience in educational leadership and management, Dr. Sallie is a respected figure in the field. As the owner of Well-done Events! multimedia services, she has garnered acclaim for her digital marketing and branding strategies expertise. Dr. Stone also serves as an educational consultant for Compass Smart Solutions, offering training, professional development, business coaching, and motivational speaking to diverse groups.",
-    image: "https://placehold.co/400x500/1B4D6E/FAFAF7",
   },
   {
     name: "Mario Stone",
     role: "Director of Operations",
     bio: "As the Director of Operations at The Well, Mario brings over a decade of experience in leadership management, event management, and multimedia production. With a keen eye for detail, he ensures the smooth day-to-day operations of our establishment. Mario is known for his reliability, problem-solving skills, and excellent communication. Beyond his professional endeavors, he is dedicated to mentoring troubled youth, sharing his faith, and cherishing moments with his family.",
-    image: "https://placehold.co/400x500/1B4D6E/FAFAF7",
   },
 ];
 
@@ -69,8 +67,8 @@ export default function AboutPage() {
             </div>
             <div className="relative overflow-hidden rounded-2xl">
               <Image
-                src="https://placehold.co/800x600/1B4D6E/FAFAF7"
-                alt="The Well mission - community collaboration"
+                src="/images/sal-and-stone-outside.webp"
+                alt="Sal and Stone outside The Well"
                 width={800}
                 height={600}
                 className="w-full h-auto rounded-2xl"
@@ -88,8 +86,8 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <div className="order-2 lg:order-1 relative overflow-hidden rounded-2xl">
               <Image
-                src="https://placehold.co/800x600/2A7B6F/FAFAF7"
-                alt="The Well vision - modern flexible workspace"
+                src="/images/mario-sally-inside.webp"
+                alt="Mario and Sallie Stone inside The Well"
                 width={800}
                 height={600}
                 className="w-full h-auto rounded-2xl"
@@ -135,29 +133,17 @@ export default function AboutPage() {
             {founders.map((founder) => (
               <div
                 key={founder.name}
-                className="rounded-2xl bg-white/80 backdrop-blur-sm border border-white/20 shadow-[0_4px_20px_rgba(27,77,110,0.08)] overflow-hidden"
+                className="rounded-2xl bg-white/80 backdrop-blur-sm border border-white/20 shadow-[0_4px_20px_rgba(27,77,110,0.08)] p-8"
               >
-                <div className="relative aspect-[4/5] overflow-hidden">
-                  <Image
-                    src={founder.image}
-                    alt={`${founder.name} - ${founder.role}`}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                </div>
-                <div className="p-8">
-                  <h3 className="font-[family-name:var(--font-playfair)] text-2xl font-bold text-text">
-                    {founder.name}
-                  </h3>
-                  <p className="mt-1 text-sm font-medium text-secondary font-[family-name:var(--font-inter)]">
-                    {founder.role}
-                  </p>
-                  <p className="mt-4 text-text-muted font-[family-name:var(--font-inter)] leading-relaxed">
-                    {founder.bio}
-                  </p>
-                </div>
+                <h3 className="font-[family-name:var(--font-playfair)] text-2xl font-bold text-text">
+                  {founder.name}
+                </h3>
+                <p className="mt-1 text-sm font-medium text-secondary font-[family-name:var(--font-inter)]">
+                  {founder.role}
+                </p>
+                <p className="mt-4 text-text-muted font-[family-name:var(--font-inter)] leading-relaxed">
+                  {founder.bio}
+                </p>
               </div>
             ))}
           </div>
