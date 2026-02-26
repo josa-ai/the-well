@@ -2,8 +2,8 @@
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Link from "@tiptap/extension-link";
-import Underline from "@tiptap/extension-underline";
+import TiptapLink from "@tiptap/extension-link";
+import TiptapUnderline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import Placeholder from "@tiptap/extension-placeholder";
 
@@ -17,9 +17,11 @@ export default function RichTextEditor({ value, onChange }: Props) {
     extensions: [
       StarterKit.configure({
         heading: { levels: [2, 3] },
+        link: false,
+        underline: false,
       }),
-      Link.configure({ openOnClick: false }),
-      Underline,
+      TiptapLink.configure({ openOnClick: false }),
+      TiptapUnderline,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       Placeholder.configure({ placeholder: "Write event description..." }),
     ],
