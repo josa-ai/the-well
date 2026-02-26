@@ -2,16 +2,25 @@ import { NextResponse } from "next/server";
 import { createSessionToken } from "@/lib/auth";
 
 export async function POST(request: Request) {
+  let body: { password?: string };
   try {
-    const { password } = await request.json();
+    body = await request.json();
+  } catch (err) {
+    return NextResponse.json(
+      { error: "JSON parse failed", detail: err instanceof Error ? err.message : String(err) },
+      { status: 400 }
+    );
+  }
 
-    if (!password || password !== process.env.ADMIN_PASSWORD) {
-      return NextResponse.json(
-        { error: "Invalid password" },
-        { status: 401 }
-      );
-    }
+  const { password } = body;
+  if (!password || password !== process.env.ADMIN_PASSWORD) {
+    return NextResponse.json(
+      { error: "Invalid password" },
+      { status: 401 }
+    );
+  }
 
+  try {
     const token = await createSessionToken();
 
     const response = NextResponse.json({ success: true });
@@ -26,7 +35,7 @@ export async function POST(request: Request) {
     return response;
   } catch (err) {
     return NextResponse.json(
-      { error: "Login failed", detail: err instanceof Error ? err.message : String(err) },
+      { error: "Token creation failed", detail: err instanceof Error ? err.message : String(err) },
       { status: 500 }
     );
   }
