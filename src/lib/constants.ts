@@ -49,3 +49,18 @@ export const EXTERNAL_LINKS = {
     href: BUSINESS.eventRequestForm,
   },
 } as const;
+
+export const EVENT_CATEGORIES = [
+  { value: "community", label: "Community" },
+  { value: "arts", label: "Arts & Culture" },
+  { value: "business", label: "Business & Networking" },
+  { value: "education", label: "Education & Workshops" },
+  { value: "music", label: "Music & Entertainment" },
+  { value: "wellness", label: "Wellness" },
+  { value: "private", label: "Private Event" },
+  { value: "other", label: "Other" },
+] as const;
+
+export const DEFAULT_EVENT_LOCATION = `The Well - ${BUSINESS.address.full}` as const;
+export const MAX_FEATURED_EVENTS = 3;
+export const MAX_EVENT_PHOTOS = 4;

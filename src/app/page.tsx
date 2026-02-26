@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { getUpcomingEvents, getFeaturedEvents } from "@/lib/events";
+import EventCard from "@/components/events/EventCard";
+import CountdownTimer from "@/components/events/CountdownTimer";
 
 export const metadata: Metadata = {
   title: "The Well - Coworking Community Space in Lakeland, FL",
@@ -23,7 +26,19 @@ const testimonials = [
   },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  let upcomingEvents: Awaited<ReturnType<typeof getUpcomingEvents>> = [];
+  let featuredEvents: Awaited<ReturnType<typeof getFeaturedEvents>> = [];
+
+  try {
+    upcomingEvents = await getUpcomingEvents(4);
+    featuredEvents = await getFeaturedEvents();
+  } catch {
+    // DB not available — show fallback content
+  }
+
+  const nextEvent = upcomingEvents[0];
+
   return (
     <>
       {/* Hero Section */}
@@ -71,45 +86,125 @@ export default function HomePage() {
       {/* What's Happening Section */}
       <section className="bg-surface py-20 sm:py-28">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <h2 className="font-[family-name:var(--font-playfair)] text-3xl sm:text-4xl font-bold text-text">
-            What&apos;s Happening at The Well...
-          </h2>
-          <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2">
-            {/* BBE Gala Card */}
-            <div className="group relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-sm border border-white/20 shadow-[0_4px_20px_rgba(27,77,110,0.08)]">
-              <div className="relative aspect-square overflow-hidden">
-                <Image
-                  src="/images/bbe-gala.jpg"
-                  alt="Black Business Expo Gala event flyer"
-                  fill
-                  className="object-cover group-hover:scale-105"
-                  style={{ transition: "transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)" }}
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          <div className="flex items-end justify-between mb-12">
+            <div>
+              <h2 className="font-[family-name:var(--font-playfair)] text-3xl sm:text-4xl font-bold text-text">
+                What&apos;s Happening at The Well...
+              </h2>
+              {nextEvent && (
+                <div className="mt-4 flex items-center gap-4">
+                  <span className="text-sm text-text-muted font-[family-name:var(--font-inter)]">Next event in:</span>
+                  <CountdownTimer targetDate={new Date(nextEvent.date).toISOString()} />
+                </div>
+              )}
+            </div>
+            <Link
+              href="/events"
+              className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-light font-[family-name:var(--font-inter)]"
+              style={{ transition: "color 0.2s" }}
+            >
+              View All Events
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" />
+              </svg>
+            </Link>
+          </div>
+
+          {/* Featured Events */}
+          {featuredEvents.length > 0 && (
+            <div className="mb-12">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-secondary font-[family-name:var(--font-inter)] mb-6">
+                Featured Events
+              </h3>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {featuredEvents.map((event) => (
+                  <EventCard
+                    key={event.slug}
+                    slug={event.slug}
+                    title={event.title}
+                    date={event.date}
+                    location={event.location}
+                    category={event.category}
+                    photos={event.photos}
+                  />
+                ))}
               </div>
-              <div className="p-6">
-                <h3 className="font-[family-name:var(--font-playfair)] text-xl font-semibold text-text">
-                  Black Business Expo
+            </div>
+          )}
+
+          {/* Upcoming Events */}
+          {upcomingEvents.length > 0 ? (
+            <div>
+              {featuredEvents.length > 0 && (
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-accent font-[family-name:var(--font-inter)] mb-6">
+                  Upcoming Events
                 </h3>
-                <p className="mt-2 text-sm text-text-muted font-[family-name:var(--font-inter)]">
-                  Join us for an evening celebrating Black-owned businesses and entrepreneurship in the Lakeland community.
+              )}
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                {upcomingEvents
+                  .filter((e) => !featuredEvents.some((f) => f.id === e.id))
+                  .slice(0, 4)
+                  .map((event) => (
+                    <EventCard
+                      key={event.slug}
+                      slug={event.slug}
+                      title={event.title}
+                      date={event.date}
+                      location={event.location}
+                      category={event.category}
+                      photos={event.photos}
+                    />
+                  ))}
+              </div>
+            </div>
+          ) : featuredEvents.length === 0 ? (
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+              {/* Fallback: original static cards when no events */}
+              <div className="group relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-sm border border-white/20 shadow-[0_4px_20px_rgba(27,77,110,0.08)]">
+                <div className="relative aspect-square overflow-hidden">
+                  <Image
+                    src="/images/bbe-gala.jpg"
+                    alt="Black Business Expo Gala event flyer"
+                    fill
+                    className="object-cover group-hover:scale-105"
+                    style={{ transition: "transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)" }}
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                </div>
+                <div className="p-6">
+                  <h3 className="font-[family-name:var(--font-playfair)] text-xl font-semibold text-text">
+                    Black Business Expo
+                  </h3>
+                  <p className="mt-2 text-sm text-text-muted font-[family-name:var(--font-inter)]">
+                    Join us for an evening celebrating Black-owned businesses and entrepreneurship in the Lakeland community.
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col justify-center rounded-2xl bg-white/80 backdrop-blur-sm border border-white/20 shadow-[0_4px_20px_rgba(27,77,110,0.08)] p-8 sm:p-10">
+                <span className="text-xs font-semibold uppercase tracking-wider text-secondary font-[family-name:var(--font-inter)]">
+                  In the News
+                </span>
+                <h3 className="mt-4 font-[family-name:var(--font-playfair)] text-2xl sm:text-3xl font-bold text-text leading-tight">
+                  Lakeland Named Best U.S. City for Working Women
+                </h3>
+                <p className="mt-4 text-text-muted font-[family-name:var(--font-inter)] leading-relaxed">
+                  Lakeland continues to be recognized as a thriving hub for professionals, making it the ideal home for The Well&apos;s community-driven workspace.
                 </p>
               </div>
             </div>
+          ) : null}
 
-            {/* News Highlight Card */}
-            <div className="flex flex-col justify-center rounded-2xl bg-white/80 backdrop-blur-sm border border-white/20 shadow-[0_4px_20px_rgba(27,77,110,0.08)] p-8 sm:p-10">
-              <span className="text-xs font-semibold uppercase tracking-wider text-secondary font-[family-name:var(--font-inter)]">
-                In the News
-              </span>
-              <h3 className="mt-4 font-[family-name:var(--font-playfair)] text-2xl sm:text-3xl font-bold text-text leading-tight">
-                Lakeland Named Best U.S. City for Working Women
-              </h3>
-              <p className="mt-4 text-text-muted font-[family-name:var(--font-inter)] leading-relaxed">
-                Lakeland continues to be recognized as a thriving hub for professionals, making it the ideal home for The Well&apos;s community-driven workspace.
-              </p>
-            </div>
+          <div className="mt-8 text-center sm:hidden">
+            <Link
+              href="/events"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-light font-[family-name:var(--font-inter)]"
+            >
+              View All Events
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" />
+              </svg>
+            </Link>
           </div>
         </div>
       </section>

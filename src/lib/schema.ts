@@ -105,3 +105,51 @@ export function generateFAQSchema(
     })),
   };
 }
+
+export function generateEventSchema(event: {
+  name: string;
+  startDate: string;
+  endDate?: string;
+  location: string;
+  description: string;
+  image?: string;
+  url: string;
+  rsvpUrl?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: event.name,
+    startDate: event.startDate,
+    ...(event.endDate ? { endDate: event.endDate } : {}),
+    location: {
+      "@type": "Place",
+      name: BUSINESS.name,
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: BUSINESS.address.street,
+        addressLocality: BUSINESS.address.city,
+        addressRegion: BUSINESS.address.state,
+        postalCode: BUSINESS.address.zip,
+        addressCountry: "US",
+      },
+    },
+    description: event.description,
+    ...(event.image ? { image: event.image } : {}),
+    url: event.url,
+    organizer: {
+      "@type": "Organization",
+      name: BUSINESS.name,
+      url: SITE_URL,
+    },
+    ...(event.rsvpUrl
+      ? {
+          offers: {
+            "@type": "Offer",
+            url: event.rsvpUrl,
+            availability: "https://schema.org/InStock",
+          },
+        }
+      : {}),
+  };
+}

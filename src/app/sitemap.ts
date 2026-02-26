@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/constants";
+import { getAllEventSlugs } from "@/lib/events";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
-  return [
+  const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: SITE_URL,
       lastModified: now,
@@ -42,4 +43,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.3,
     },
   ];
+
+  // Dynamic event pages
+  try {
+    const eventSlugs = await getAllEventSlugs();
+    const eventRoutes: MetadataRoute.Sitemap = eventSlugs.map((event) => ({
+      url: `${SITE_URL}/events/${event.slug}`,
+      lastModified: event.updatedAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    }));
+    return [...staticRoutes, ...eventRoutes];
+  } catch {
+    return staticRoutes;
+  }
 }

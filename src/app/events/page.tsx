@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { BUSINESS } from "@/lib/constants";
+import { getUpcomingEvents, getFeaturedPastEvents, getPastEvents } from "@/lib/events";
+import CategoryFilter from "@/components/events/CategoryFilter";
+import EventCard from "@/components/events/EventCard";
 
 export const metadata: Metadata = {
   title: "Events & Programming | The Well Lakeland",
@@ -9,30 +11,22 @@ export const metadata: Metadata = {
     "Discover upcoming events, community programming, and culturally relevant gatherings at The Well in Lakeland, FL. RSVP to secure your spot.",
 };
 
-const pastEvents = [
-  {
-    title: "The Murals Project",
-    description: "A community art initiative celebrating local talent and cultural expression.",
-    image: "https://placehold.co/600x400/1B4D6E/FAFAF7",
-  },
-  {
-    title: "Community Membership Drive",
-    description: "An open-door event welcoming new members to The Well community.",
-    image: "https://placehold.co/600x400/2A7B6F/FAFAF7",
-  },
-  {
-    title: "Init to Win It",
-    description: "A startup pitch competition fostering entrepreneurship and innovation.",
-    image: "https://placehold.co/600x400/C8963E/FAFAF7",
-  },
-  {
-    title: "Book Signing",
-    description: "An intimate gathering celebrating local authors and literary achievement.",
-    image: "https://placehold.co/600x400/143A53/FAFAF7",
-  },
-];
+export default async function EventsPage() {
+  let upcomingEvents: Awaited<ReturnType<typeof getUpcomingEvents>> = [];
+  let featuredPastEvents: Awaited<ReturnType<typeof getFeaturedPastEvents>> = [];
+  let pastEvents: Awaited<ReturnType<typeof getPastEvents>> = [];
 
-export default function EventsPage() {
+  try {
+    upcomingEvents = await getUpcomingEvents();
+    featuredPastEvents = await getFeaturedPastEvents();
+    pastEvents = await getPastEvents(8);
+  } catch {
+    // DB not available — show empty state
+  }
+
+  // Serialize dates for client components
+  const serializedUpcoming = JSON.parse(JSON.stringify(upcomingEvents));
+
   return (
     <>
       {/* Hero */}
@@ -56,58 +50,110 @@ export default function EventsPage() {
         </div>
       </section>
 
+      {/* Upcoming Events */}
+      {upcomingEvents.length > 0 && (
+        <section className="bg-background py-20 sm:py-28">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <span className="text-xs font-semibold uppercase tracking-wider text-accent font-[family-name:var(--font-inter)]">
+                Coming Up
+              </span>
+              <h2 className="mt-3 font-[family-name:var(--font-playfair)] text-3xl sm:text-4xl font-bold text-text">
+                Upcoming Events
+              </h2>
+            </div>
+            <CategoryFilter events={serializedUpcoming} />
+          </div>
+        </section>
+      )}
+
+      {/* Featured Past Events */}
+      {featuredPastEvents.length > 0 && (
+        <section className="bg-surface py-20 sm:py-28">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <span className="text-xs font-semibold uppercase tracking-wider text-secondary font-[family-name:var(--font-inter)]">
+                Highlights
+              </span>
+              <h2 className="mt-3 font-[family-name:var(--font-playfair)] text-3xl sm:text-4xl font-bold text-text">
+                Featured Past Events
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {featuredPastEvents.map((event) => (
+                <EventCard
+                  key={event.slug}
+                  slug={event.slug}
+                  title={event.title}
+                  date={event.date}
+                  location={event.location}
+                  category={event.category}
+                  photos={event.photos}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Past Events Gallery */}
-      <section className="bg-surface py-20 sm:py-28">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <span className="text-xs font-semibold uppercase tracking-wider text-secondary font-[family-name:var(--font-inter)]">
-              Gallery
-            </span>
-            <h2 className="mt-3 font-[family-name:var(--font-playfair)] text-3xl sm:text-4xl font-bold text-text">
-              Past Events at the Well
-            </h2>
-            <p className="mt-4 mx-auto max-w-2xl text-text-muted font-[family-name:var(--font-inter)] leading-relaxed">
-              Discover the diverse events awaiting you at The Well, your premier
-              co-working space for personal and professional growth.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-            {pastEvents.map((event) => (
-              <div
-                key={event.title}
-                className="group rounded-2xl bg-white/80 backdrop-blur-sm border border-white/20 shadow-[0_4px_20px_rgba(27,77,110,0.08)] overflow-hidden
-                  hover:shadow-[0_8px_30px_rgba(27,77,110,0.12)]"
-                style={{ transition: "box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1)" }}
-              >
-                <div className="relative aspect-[3/2] overflow-hidden">
-                  <Image
-                    src={event.image}
-                    alt={event.title}
-                    fill
-                    className="object-cover group-hover:scale-105"
-                    style={{ transition: "transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)" }}
-                    sizes="(max-width: 640px) 100vw, 50vw"
+      {pastEvents.length > 0 && (
+        <section className={featuredPastEvents.length > 0 ? "bg-background py-20 sm:py-28" : "bg-surface py-20 sm:py-28"}>
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <span className="text-xs font-semibold uppercase tracking-wider text-secondary font-[family-name:var(--font-inter)]">
+                Gallery
+              </span>
+              <h2 className="mt-3 font-[family-name:var(--font-playfair)] text-3xl sm:text-4xl font-bold text-text">
+                Past Events at the Well
+              </h2>
+              <p className="mt-4 mx-auto max-w-2xl text-text-muted font-[family-name:var(--font-inter)] leading-relaxed">
+                Discover the diverse events awaiting you at The Well, your premier
+                co-working space for personal and professional growth.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {pastEvents
+                .filter((e) => !featuredPastEvents.some((f) => f.id === e.id))
+                .map((event) => (
+                  <EventCard
+                    key={event.slug}
+                    slug={event.slug}
+                    title={event.title}
+                    date={event.date}
+                    location={event.location}
+                    category={event.category}
+                    photos={event.photos}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <span className="inline-block px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-xs font-medium text-white font-[family-name:var(--font-inter)]">
-                      Past Event
-                    </span>
-                  </div>
-                </div>
-                <div className="p-6">
-                  <h3 className="font-[family-name:var(--font-playfair)] text-xl font-semibold text-text">
-                    {event.title}
-                  </h3>
-                  <p className="mt-2 text-sm text-text-muted font-[family-name:var(--font-inter)] leading-relaxed">
-                    {event.description}
-                  </p>
-                </div>
-              </div>
-            ))}
+                ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
+      {/* Show placeholder if no events at all */}
+      {upcomingEvents.length === 0 && pastEvents.length === 0 && (
+        <section className="bg-surface py-20 sm:py-28">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center">
+            <svg className="w-16 h-16 mx-auto text-text-muted/30 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+            </svg>
+            <h2 className="font-[family-name:var(--font-playfair)] text-2xl font-bold text-text">
+              Events Coming Soon
+            </h2>
+            <p className="mt-3 text-text-muted font-[family-name:var(--font-inter)] max-w-md mx-auto">
+              We&apos;re planning exciting events for the community. Check back soon or contact us for more information.
+            </p>
+            <Link
+              href="/contact"
+              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary-light active:scale-[0.97] font-[family-name:var(--font-inter)]"
+              style={{ transition: "background-color 0.2s, transform 0.1s" }}
+            >
+              Contact Us
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* Host Your Event CTA */}
       <section className="relative py-20 sm:py-28 noise-overlay bg-primary">

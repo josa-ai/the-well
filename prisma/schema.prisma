@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id             String       @id @default(cuid())
+  title          String
+  slug           String       @unique
+  date           DateTime
+  endDate        DateTime?
+  location       String       @default("The Well - 114 E. Parker St., Lakeland, FL 33801")
+  details        String       @db.Text
+  category       String       @default("community")
+  tags           String[]     @default([])
+  rsvpUrl        String?
+  capacity       Int?
+  isFeatured     Boolean      @default(false)
+  isFeaturedPast Boolean      @default(false)
+  status         EventStatus  @default(DRAFT)
+  photos         EventPhoto[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([date])
+  @@index([isFeatured])
+  @@index([status])
+}
+
+model EventPhoto {
+  id        String  @id @default(cuid())
+  eventId   String
+  event     Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  url       String
+  alt       String  @default("")
+  isPrimary Boolean @default(false)
+  order     Int     @default(0)
+
+  @@index([eventId])
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+}
