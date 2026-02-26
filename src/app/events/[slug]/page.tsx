@@ -73,8 +73,8 @@ export default async function EventPage({
 
   const eventSchema = generateEventSchema({
     name: event.title,
-    startDate: event.date.toISOString(),
-    endDate: event.endDate?.toISOString(),
+    startDate: eventDate.toISOString(),
+    endDate: event.endDate ? new Date(event.endDate).toISOString() : undefined,
     location: event.location,
     description: event.details.slice(0, 500),
     image: primaryPhoto?.url,
@@ -154,12 +154,14 @@ export default async function EventPage({
                       month: "long",
                       day: "numeric",
                       year: "numeric",
+                      timeZone: "America/New_York",
                     })}
                   </p>
                   <p className="text-sm text-[var(--color-text-muted)]">
                     {eventDate.toLocaleTimeString("en-US", {
                       hour: "numeric",
                       minute: "2-digit",
+                      timeZone: "America/New_York",
                     })}
                     {event.endDate && (
                       <>
@@ -167,6 +169,7 @@ export default async function EventPage({
                         {new Date(event.endDate).toLocaleTimeString("en-US", {
                           hour: "numeric",
                           minute: "2-digit",
+                          timeZone: "America/New_York",
                         })}
                       </>
                     )}
@@ -217,8 +220,8 @@ export default async function EventPage({
                 {!isPast && (
                   <CalendarButtons
                     title={event.title}
-                    date={event.date.toISOString()}
-                    endDate={event.endDate?.toISOString()}
+                    date={eventDate.toISOString()}
+                    endDate={event.endDate ? new Date(event.endDate).toISOString() : undefined}
                     location={event.location}
                     details={event.details}
                   />

@@ -122,6 +122,7 @@ export default function EventsTable({ events }: { events: Event[] }) {
                       month: "short",
                       day: "numeric",
                       year: "numeric",
+                      timeZone: "America/New_York",
                     })}
                   </td>
                   <td className="px-4 py-3">

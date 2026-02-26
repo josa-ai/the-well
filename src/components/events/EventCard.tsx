@@ -55,10 +55,10 @@ export default function EventCard({
         <div className="absolute bottom-3 left-3">
           <div className="bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5 text-center shadow-sm">
             <div className="text-xs font-semibold text-[var(--color-primary)] uppercase tracking-wide">
-              {eventDate.toLocaleDateString("en-US", { month: "short" })}
+              {eventDate.toLocaleDateString("en-US", { month: "short", timeZone: "America/New_York" })}
             </div>
             <div className="text-lg font-bold text-[var(--color-text)] leading-tight">
-              {eventDate.getDate()}
+              {eventDate.toLocaleDateString("en-US", { day: "numeric", timeZone: "America/New_York" })}
             </div>
           </div>
         </div>
@@ -96,11 +96,13 @@ export default function EventCard({
               month: "long",
               day: "numeric",
               year: "numeric",
+              timeZone: "America/New_York",
             })}
             {" at "}
             {eventDate.toLocaleTimeString("en-US", {
               hour: "numeric",
               minute: "2-digit",
+              timeZone: "America/New_York",
             })}
           </span>
         </div>
