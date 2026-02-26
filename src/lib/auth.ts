@@ -26,46 +26,42 @@ async function getKey(): Promise<CryptoKey> {
 
 export async function createSessionToken(): Promise<string> {
   const key = await getKey();
-  const payload = JSON.stringify({
-    role: "admin",
-    iat: Date.now(),
-  });
-  const payloadHex = toHex(encoder.encode(payload).buffer as ArrayBuffer);
+  const iat = Date.now();
+  const payload = `admin.${iat}`;
   const signature = await crypto.subtle.sign(
     "HMAC",
     key,
     encoder.encode(payload)
   );
   const sigHex = toHex(signature);
-  // Token format: payloadHex.sigHex (all hex, cookie-safe)
-  return `${payloadHex}.${sigHex}`;
+  return `${payload}.${sigHex}`;
 }
 
 export async function verifySessionToken(token: string): Promise<boolean> {
   try {
     const key = await getKey();
-    const dotIndex = token.lastIndexOf(".");
-    if (dotIndex === -1) return false;
+    // Token format: admin.{timestamp}.{sigHex}
+    const parts = token.split(".");
+    if (parts.length !== 3) return false;
 
-    const payloadHex = token.slice(0, dotIndex);
-    const sigHex = token.slice(dotIndex + 1);
+    const payload = `${parts[0]}.${parts[1]}`;
+    const sigHex = parts[2];
 
-    const payloadBytes = fromHex(payloadHex);
     const sigBytes = fromHex(sigHex);
 
     const valid = await crypto.subtle.verify(
       "HMAC",
       key,
       sigBytes as BufferSource,
-      payloadBytes as BufferSource
+      encoder.encode(payload)
     );
 
     if (!valid) return false;
 
-    // Decode payload and check token age (7 days max)
-    const payload = new TextDecoder().decode(payloadBytes);
-    const data = JSON.parse(payload);
-    const age = Date.now() - data.iat;
+    // Check token age (7 days max)
+    const iat = parseInt(parts[1], 10);
+    if (isNaN(iat)) return false;
+    const age = Date.now() - iat;
     const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
     return age < SEVEN_DAYS;
   } catch {
