@@ -5,10 +5,11 @@ import { verifySessionToken } from "@/lib/auth";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip auth check for login page and login API
+  // Skip auth check for login page, login API, and logout API
   if (
-    pathname === "/admin/login" ||
-    pathname === "/api/admin/login"
+    pathname.startsWith("/admin/login") ||
+    pathname.startsWith("/api/admin/login") ||
+    pathname.startsWith("/api/admin/logout")
   ) {
     return NextResponse.next();
   }
@@ -20,7 +21,17 @@ export async function middleware(request: NextRequest) {
 
   const token = request.cookies.get("admin_session")?.value;
 
-  if (!token || !(await verifySessionToken(token))) {
+  let isValid = false;
+  if (token) {
+    try {
+      isValid = await verifySessionToken(token);
+    } catch {
+      // ADMIN_SECRET not set or token verification failed
+      isValid = false;
+    }
+  }
+
+  if (!isValid) {
     // For API routes, return 401 instead of redirect
     if (pathname.startsWith("/api/")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
