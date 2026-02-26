@@ -27,9 +27,17 @@ model Event {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
+  // Recurrence fields
+  recurrenceRule     String?
+  recurrenceDays     String[]  @default([])
+  recurrenceEndDate  DateTime?
+  recurrenceGroupId  String?
+  isRecurrenceParent Boolean   @default(false)
+
   @@index([date])
   @@index([isFeatured])
   @@index([status])
+  @@index([recurrenceGroupId])
 }
 
 model EventPhoto {

@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { getEventBySlug, getAllEventSlugs } from "@/lib/events";
+import { sanitizeEventHtml } from "@/lib/sanitize";
 import { generateEventSchema } from "@/lib/schema";
 import { SITE_URL, SITE_NAME } from "@/lib/constants";
 import EventStatusBadge from "@/components/events/EventStatusBadge";
@@ -229,12 +228,11 @@ export default async function EventPage({
             </div>
           </div>
 
-          {/* Event details (markdown) */}
-          <div className="prose prose-lg max-w-none text-[var(--color-text)] prose-headings:font-[family-name:var(--font-playfair)] prose-headings:tracking-tight prose-a:text-[var(--color-primary)] prose-a:no-underline hover:prose-a:underline">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {event.details}
-            </ReactMarkdown>
-          </div>
+          {/* Event details */}
+          <div
+            className="prose prose-lg max-w-none text-[var(--color-text)] prose-headings:font-[family-name:var(--font-playfair)] prose-headings:tracking-tight prose-a:text-[var(--color-primary)] prose-a:no-underline hover:prose-a:underline"
+            dangerouslySetInnerHTML={{ __html: sanitizeEventHtml(event.details) }}
+          />
 
           {/* Photo gallery */}
           {event.photos.length > 1 && (

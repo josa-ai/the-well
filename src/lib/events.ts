@@ -9,6 +9,7 @@ export const getUpcomingEvents = unstable_cache(
     return prisma.event.findMany({
       where: {
         status: EventStatus.PUBLISHED,
+        isRecurrenceParent: false,
         date: { gte: new Date() },
       },
       include: { photos: { orderBy: { order: "asc" } } },
@@ -25,6 +26,7 @@ export const getFeaturedEvents = unstable_cache(
     return prisma.event.findMany({
       where: {
         status: EventStatus.PUBLISHED,
+        isRecurrenceParent: false,
         isFeatured: true,
       },
       include: { photos: { orderBy: { order: "asc" } } },
@@ -41,6 +43,7 @@ export const getFeaturedPastEvents = unstable_cache(
     return prisma.event.findMany({
       where: {
         status: EventStatus.PUBLISHED,
+        isRecurrenceParent: false,
         isFeaturedPast: true,
         date: { lt: new Date() },
       },
@@ -57,6 +60,7 @@ export const getPastEvents = unstable_cache(
     return prisma.event.findMany({
       where: {
         status: EventStatus.PUBLISHED,
+        isRecurrenceParent: false,
         date: { lt: new Date() },
       },
       include: { photos: { orderBy: { order: "asc" } } },
@@ -71,7 +75,7 @@ export const getPastEvents = unstable_cache(
 export const getEventBySlug = unstable_cache(
   async (slug: string) => {
     return prisma.event.findUnique({
-      where: { slug, status: EventStatus.PUBLISHED },
+      where: { slug, status: EventStatus.PUBLISHED, isRecurrenceParent: false },
       include: { photos: { orderBy: { order: "asc" } } },
     });
   },
@@ -82,7 +86,7 @@ export const getEventBySlug = unstable_cache(
 export const getAllEventSlugs = unstable_cache(
   async () => {
     const events = await prisma.event.findMany({
-      where: { status: EventStatus.PUBLISHED },
+      where: { status: EventStatus.PUBLISHED, isRecurrenceParent: false },
       select: { slug: true, updatedAt: true },
     });
     return events;

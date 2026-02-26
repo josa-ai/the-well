@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import RichTextEditor from "./RichTextEditor";
 import PhotoUploader from "./PhotoUploader";
+import { getRecurrencePreviewCount } from "@/lib/recurrence";
 
 const CATEGORIES = [
   { value: "community", label: "Community" },
@@ -80,6 +81,21 @@ export default function EventForm({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
+  // Recurrence state (only for new events)
+  const [recurrenceRule, setRecurrenceRule] = useState("none");
+  const [recurrenceDays, setRecurrenceDays] = useState<string[]>([]);
+  const [recurrenceEndType, setRecurrenceEndType] = useState<"date" | "year">("year");
+  const [recurrenceEndDate, setRecurrenceEndDate] = useState("");
+
+  const recurrenceCount = useMemo(() => {
+    if (recurrenceRule === "none" || !form.date) return 0;
+    const start = new Date(form.date);
+    const end = recurrenceEndType === "date" && recurrenceEndDate
+      ? new Date(recurrenceEndDate)
+      : null;
+    return getRecurrencePreviewCount(start, recurrenceRule, recurrenceDays, end);
+  }, [form.date, recurrenceRule, recurrenceDays, recurrenceEndType, recurrenceEndDate]);
+
   function updateField(field: string, value: string | boolean) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
@@ -108,6 +124,16 @@ export default function EventForm({
         isFeatured: form.isFeatured,
         isFeaturedPast: form.isFeaturedPast,
         status: form.status,
+        ...(recurrenceRule !== "none" && !isEditing
+          ? {
+              recurrenceRule,
+              recurrenceDays,
+              recurrenceEndDate:
+                recurrenceEndType === "date" && recurrenceEndDate
+                  ? new Date(recurrenceEndDate).toISOString()
+                  : null,
+            }
+          : {}),
       };
 
       const url = isEditing
@@ -209,10 +235,10 @@ export default function EventForm({
             />
           </div>
 
-          {/* Details (Markdown) */}
+          {/* Description */}
           <div>
             <label className={labelClass}>
-              Details <span className="text-red-500">*</span>
+              Description <span className="text-red-500">*</span>
             </label>
             <RichTextEditor
               value={form.details}
@@ -276,6 +302,106 @@ export default function EventForm({
               </label>
             </div>
           </div>
+
+          {/* Recurrence (new events only) */}
+          {!isEditing && (
+            <div className="bg-white rounded-xl border border-[var(--color-border)] p-5 space-y-4">
+              <div>
+                <label className={labelClass}>Recurrence</label>
+                <select
+                  value={recurrenceRule}
+                  onChange={(e) => setRecurrenceRule(e.target.value)}
+                  className={inputClass}
+                >
+                  <option value="none">None</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="biweekly">Every 2 Weeks</option>
+                  <option value="monthly-date">Monthly (same date)</option>
+                  <option value="monthly-day">Monthly (same day)</option>
+                </select>
+              </div>
+
+              {(recurrenceRule === "weekly" || recurrenceRule === "biweekly") && (
+                <div>
+                  <label className={labelClass}>On days</label>
+                  <div className="flex gap-1.5 flex-wrap">
+                    {[
+                      { code: "MO", label: "M" },
+                      { code: "TU", label: "T" },
+                      { code: "WE", label: "W" },
+                      { code: "TH", label: "T" },
+                      { code: "FR", label: "F" },
+                      { code: "SA", label: "S" },
+                      { code: "SU", label: "S" },
+                    ].map((day) => (
+                      <button
+                        key={day.code}
+                        type="button"
+                        onClick={() =>
+                          setRecurrenceDays((prev) =>
+                            prev.includes(day.code)
+                              ? prev.filter((d) => d !== day.code)
+                              : [...prev, day.code]
+                          )
+                        }
+                        className={`w-9 h-9 rounded-full text-xs font-medium transition-colors ${
+                          recurrenceDays.includes(day.code)
+                            ? "bg-[var(--color-primary)] text-white"
+                            : "bg-[var(--color-background)] text-[var(--color-text-muted)] hover:bg-[var(--color-border)]"
+                        }`}
+                      >
+                        {day.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {recurrenceRule !== "none" && (
+                <>
+                  <div>
+                    <label className={labelClass}>Until</label>
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="recurrenceEnd"
+                          checked={recurrenceEndType === "year"}
+                          onChange={() => setRecurrenceEndType("year")}
+                          className="w-4 h-4 text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
+                        />
+                        <span className="text-sm text-[var(--color-text)]">For 1 year</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="recurrenceEnd"
+                          checked={recurrenceEndType === "date"}
+                          onChange={() => setRecurrenceEndType("date")}
+                          className="w-4 h-4 text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
+                        />
+                        <span className="text-sm text-[var(--color-text)]">Until date</span>
+                      </label>
+                      {recurrenceEndType === "date" && (
+                        <input
+                          type="date"
+                          value={recurrenceEndDate}
+                          onChange={(e) => setRecurrenceEndDate(e.target.value)}
+                          className={inputClass}
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  {recurrenceCount > 0 && (
+                    <p className="text-sm text-[var(--color-accent)] font-medium">
+                      Creates {recurrenceCount} event{recurrenceCount !== 1 ? "s" : ""}
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+          )}
 
           {/* Category */}
           <div className="bg-white rounded-xl border border-[var(--color-border)] p-5">
