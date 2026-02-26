@@ -1,5 +1,17 @@
 const encoder = new TextEncoder();
 
+function toHex(buffer: ArrayBuffer): string {
+  return Array.from(new Uint8Array(buffer))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function fromHex(hex: string): Uint8Array {
+  const bytes = hex.match(/.{2}/g);
+  if (!bytes) throw new Error("Invalid hex");
+  return new Uint8Array(bytes.map((b) => parseInt(b, 16)));
+}
+
 async function getKey(): Promise<CryptoKey> {
   const secret = process.env.ADMIN_SECRET;
   if (!secret) throw new Error("ADMIN_SECRET env var is not set");
@@ -18,44 +30,40 @@ export async function createSessionToken(): Promise<string> {
     role: "admin",
     iat: Date.now(),
   });
+  const payloadHex = toHex(encoder.encode(payload).buffer as ArrayBuffer);
   const signature = await crypto.subtle.sign(
     "HMAC",
     key,
     encoder.encode(payload)
   );
-  const sigHex = Array.from(new Uint8Array(signature))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-  // Base64-encode the payload.sigHex so it's cookie-safe
-  const token = btoa(`${payload}.${sigHex}`);
-  return token;
+  const sigHex = toHex(signature);
+  // Token format: payloadHex.sigHex (all hex, cookie-safe)
+  return `${payloadHex}.${sigHex}`;
 }
 
 export async function verifySessionToken(token: string): Promise<boolean> {
   try {
     const key = await getKey();
-    const decoded = atob(token);
-    const dotIndex = decoded.lastIndexOf(".");
+    const dotIndex = token.lastIndexOf(".");
     if (dotIndex === -1) return false;
 
-    const payload = decoded.slice(0, dotIndex);
-    const sigHex = decoded.slice(dotIndex + 1);
+    const payloadHex = token.slice(0, dotIndex);
+    const sigHex = token.slice(dotIndex + 1);
 
-    // Reconstruct signature bytes
-    const sigBytes = new Uint8Array(
-      sigHex.match(/.{2}/g)!.map((byte) => parseInt(byte, 16))
-    );
+    const payloadBytes = fromHex(payloadHex);
+    const sigBytes = fromHex(sigHex);
 
     const valid = await crypto.subtle.verify(
       "HMAC",
       key,
-      sigBytes,
-      encoder.encode(payload)
+      sigBytes as BufferSource,
+      payloadBytes as BufferSource
     );
 
     if (!valid) return false;
 
-    // Check token age (7 days max)
+    // Decode payload and check token age (7 days max)
+    const payload = new TextDecoder().decode(payloadBytes);
     const data = JSON.parse(payload);
     const age = Date.now() - data.iat;
     const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
