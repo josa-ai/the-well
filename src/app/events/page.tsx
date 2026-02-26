@@ -3,6 +3,7 @@ import Link from "next/link";
 import { BUSINESS } from "@/lib/constants";
 import { getUpcomingEvents, getFeaturedPastEvents, getPastEvents } from "@/lib/events";
 import CategoryFilter from "@/components/events/CategoryFilter";
+import EventCalendar from "@/components/events/EventCalendar";
 import EventCard from "@/components/events/EventCard";
 
 export const metadata: Metadata = {
@@ -63,6 +64,23 @@ export default async function EventsPage() {
               </h2>
             </div>
             <CategoryFilter events={serializedUpcoming} />
+          </div>
+        </section>
+      )}
+
+      {/* Calendar */}
+      {upcomingEvents.length > 0 && (
+        <section className="bg-surface py-20 sm:py-28">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <span className="text-xs font-semibold uppercase tracking-wider text-secondary font-[family-name:var(--font-inter)]">
+                Plan Ahead
+              </span>
+              <h2 className="mt-3 font-[family-name:var(--font-playfair)] text-3xl sm:text-4xl font-bold text-text">
+                Event Calendar
+              </h2>
+            </div>
+            <EventCalendar events={serializedUpcoming} />
           </div>
         </section>
       )}
