@@ -153,14 +153,20 @@ export default function EventForm({
 
       const event = await res.json();
 
-      // If creating, save photos to the new event
+      // If creating, save photos to the new event (and all instances if recurring)
       if (!isEditing && photos.length > 0) {
-        for (const photo of photos) {
-          await fetch(`/api/events/${event.id}/photos`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(photo),
-          });
+        const eventIds: string[] = [event.id];
+        if (event.instanceIds && Array.isArray(event.instanceIds)) {
+          eventIds.push(...event.instanceIds);
+        }
+        for (const eventId of eventIds) {
+          for (const photo of photos) {
+            await fetch(`/api/events/${eventId}/photos`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(photo),
+            });
+          }
         }
       }
 

@@ -168,7 +168,11 @@ export async function POST(request: Request) {
 
     revalidateTag("events", "max");
     return NextResponse.json(
-      { ...result.parent, instanceCount: result.instances.length },
+      {
+        ...result.parent,
+        instanceCount: result.instances.length,
+        instanceIds: result.instances.map((i) => i.id),
+      },
       { status: 201 }
     );
   } catch (error) {
