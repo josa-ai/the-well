@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/db";
 import { generateUniqueSlug } from "@/lib/slugify";
-import { EventStatus } from "@/generated/prisma/client";
+import { EventStatus } from "@prisma/client";
 
 // Public: list events with optional filters
 export async function GET(request: Request) {

@@ -1,6 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/db";
-import { EventStatus } from "@/generated/prisma/client";
+import { EventStatus } from "@prisma/client";
 
 // ── Public cached queries ──────────────────────────────────────────
 
