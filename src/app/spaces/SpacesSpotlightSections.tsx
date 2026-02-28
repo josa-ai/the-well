@@ -30,15 +30,15 @@ const communityProgramItems: SpotlightItem[] = [
   { icon: Award, title: "Training & Professional Development", description: "Advance your career with targeted training and professional growth programs.", color: "#3A8FCC" },
 ];
 
-const amenityItems: SpotlightItem[] = [
-  { icon: Wifi, title: "High-Speed Wi-Fi", description: "Stay connected with reliable, fast internet throughout the entire facility.", color: "#1B4D6E" },
-  { icon: Car, title: "Secure Parking", description: "Convenient, well-lit parking available for all members and guests.", color: "#5A6E7D" },
-  { icon: UtensilsCrossed, title: "Prep Kitchen", description: "A fully equipped prep kitchen for catering and event food preparation.", color: "#C8963E" },
-  { icon: Video, title: "Live Stream Capabilities", description: "Broadcast your events with professional-grade live streaming equipment.", color: "#E05252" },
-  { icon: Printer, title: "Printing and Fax Services", description: "On-site printing, copying, and fax services for all your business needs.", color: "#2A7B6F" },
-  { icon: Headphones, title: "Admin Support Services", description: "Professional administrative support to keep your business running smoothly.", color: "#7C5CBF" },
-  { icon: Mail, title: "Mail Services", description: "Secure mail handling and a professional business address for your correspondence.", color: "#D4785C" },
-  { icon: MonitorSmartphone, title: "Video Conferencing Services", description: "State-of-the-art video conferencing for seamless remote collaboration.", color: "#3A8FCC" },
+const amenities = [
+  { icon: Wifi, label: "High-Speed Wi-Fi" },
+  { icon: Car, label: "Secure Parking" },
+  { icon: UtensilsCrossed, label: "Prep Kitchen" },
+  { icon: Video, label: "Live Streaming" },
+  { icon: Printer, label: "Printing & Fax" },
+  { icon: Headphones, label: "Admin Support" },
+  { icon: Mail, label: "Mail Services" },
+  { icon: MonitorSmartphone, label: "Video Conferencing" },
 ];
 
 export function CommunityProgramsSpotlight() {
@@ -51,12 +51,36 @@ export function CommunityProgramsSpotlight() {
   );
 }
 
-export function AmenitiesSpotlight() {
+export function WhatWeOfferSection() {
   return (
-    <SpotlightCards
-      items={amenityItems}
-      eyebrow="Amenities"
-      heading="Enhanced Amenities"
-    />
+    <div>
+      <SpotlightCards
+        items={communityProgramItems}
+        eyebrow="What We Offer"
+        heading="Programs & Amenities"
+      />
+
+      {/* Amenity Strip */}
+      <div className="border-t border-border pt-8 mt-8">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:flex lg:flex-wrap lg:justify-center lg:gap-0">
+          {amenities.map((amenity, index) => {
+            const Icon = amenity.icon;
+            return (
+              <div
+                key={amenity.label}
+                className={`flex items-center gap-2.5 px-5 py-3 lg:py-2 ${
+                  index < amenities.length - 1 ? "lg:border-r lg:border-border" : ""
+                }`}
+              >
+                <Icon size={20} strokeWidth={1.6} className="text-secondary shrink-0" />
+                <span className="text-text-muted font-[family-name:var(--font-inter)] whitespace-nowrap">
+                  {amenity.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
   );
 }

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import { CommunityProgramsSpotlight, AmenitiesSpotlight } from "./SpacesSpotlightSections";
+import { WhatWeOfferSection } from "./SpacesSpotlightSections";
 
 export const metadata: Metadata = {
   title: "Rental Spaces & Amenities | The Well Lakeland",
@@ -160,7 +160,7 @@ export default function SpacesPage() {
             className="font-[family-name:var(--font-playfair)] text-4xl sm:text-5xl lg:text-6xl font-bold text-white max-w-3xl"
             style={{ letterSpacing: "-0.03em" }}
           >
-            Your Workspace. Your Community. Your Well.
+            Host Something Remarkable
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-white/80 font-[family-name:var(--font-inter)] leading-relaxed">
             The Well is a hub for personal and professional growth, innovative
@@ -199,8 +199,8 @@ export default function SpacesPage() {
         </div>
       </section>
 
-      {/* Co-working & Office Suites */}
-      <section id="coworking" className="bg-surface py-20 sm:py-28">
+      {/* Co-working & Office Suites — Generous spacing */}
+      <section id="coworking" className="bg-surface py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           {/* Intro row */}
           <ScrollReveal>
@@ -280,78 +280,77 @@ export default function SpacesPage() {
         </div>
       </section>
 
-      {/* Versatile Event Spaces — Bento Grid */}
-      <section className="bg-background py-20 sm:py-28">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <ScrollReveal>
-            <div className="text-center mb-16">
-              <span className="text-xs font-semibold uppercase tracking-wider text-secondary font-[family-name:var(--font-inter)]">
-                Versatile Spaces
-              </span>
-              <h2 className="mt-3 font-[family-name:var(--font-playfair)] text-3xl sm:text-4xl font-bold text-text">
-                Versatile Event Spaces
-              </h2>
-            </div>
-          </ScrollReveal>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:auto-rows-[260px]">
-            {eventSpaces.map((space, index) => (
-              <ScrollReveal key={space.title} delay={index * 80}>
-                <div
-                  className={`group relative rounded-2xl overflow-hidden h-full ${bentoClasses[index]}
-                    shadow-[0_4px_20px_rgba(27,77,110,0.08)] hover:shadow-[0_8px_30px_rgba(27,77,110,0.14)]`}
-                  style={{ transition: "box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1)" }}
-                >
-                  <Image
-                    src={space.image}
-                    alt={space.title}
-                    fill
-                    className="object-cover group-hover:scale-105"
-                    style={{ transition: "transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)" }}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  />
-                  {/* Color treatment layer */}
-                  <div className="absolute inset-0 bg-primary/15 mix-blend-multiply" />
-                  {/* Gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-                  {/* Content overlay */}
-                  <div className="absolute inset-0 flex flex-col justify-end p-6">
-                    <div className="w-10 h-10 rounded-lg bg-white/15 backdrop-blur-sm text-white flex items-center justify-center mb-3">
-                      {space.icon}
+      {/* Versatile Event Spaces — Dark Navy, Full-Width Bento, Tighter spacing */}
+      <section className="relative bg-primary py-16 sm:py-24 overflow-hidden">
+        {/* Subtle gold radial accent */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(200,150,62,0.08),transparent_60%)]" />
+        <div className="relative">
+          {/* Heading stays contained */}
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <ScrollReveal>
+              <div className="text-center mb-16">
+                <span className="text-xs font-semibold uppercase tracking-wider text-secondary font-[family-name:var(--font-inter)]">
+                  Versatile Spaces
+                </span>
+                <h2 className="mt-3 font-[family-name:var(--font-playfair)] text-3xl sm:text-4xl font-bold text-white">
+                  Versatile Event Spaces
+                </h2>
+              </div>
+            </ScrollReveal>
+          </div>
+          {/* Grid breaks out to wider container */}
+          <div className="mx-auto max-w-[1400px] px-4">
+            <div className="grid grid-cols-1 gap-2 md:grid-cols-3 md:auto-rows-[320px]">
+              {eventSpaces.map((space, index) => (
+                <ScrollReveal key={space.title} delay={index * 80}>
+                  <div
+                    className={`group relative rounded-xl overflow-hidden h-full ${bentoClasses[index]}
+                      shadow-[0_4px_20px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)]`}
+                    style={{ transition: "box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1)" }}
+                  >
+                    <Image
+                      src={space.image}
+                      alt={space.title}
+                      fill
+                      className="object-cover group-hover:scale-105"
+                      style={{ transition: "transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)" }}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                    {/* Color treatment layer */}
+                    <div className="absolute inset-0 bg-primary/15 mix-blend-multiply" />
+                    {/* Gradient overlay — reduced intensity on dark bg */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    {/* Content overlay */}
+                    <div className="absolute inset-0 flex flex-col justify-end p-6">
+                      <div className="w-10 h-10 rounded-lg bg-white/15 backdrop-blur-sm text-white flex items-center justify-center mb-3">
+                        {space.icon}
+                      </div>
+                      <h3 className="font-[family-name:var(--font-playfair)] text-lg font-semibold text-white leading-tight">
+                        {space.title}
+                      </h3>
+                      <p className="mt-2 text-sm text-white/75 font-[family-name:var(--font-inter)] leading-relaxed line-clamp-2">
+                        {space.description}
+                      </p>
                     </div>
-                    <h3 className="font-[family-name:var(--font-playfair)] text-lg font-semibold text-white leading-tight">
-                      {space.title}
-                    </h3>
-                    <p className="mt-2 text-sm text-white/75 font-[family-name:var(--font-inter)] leading-relaxed line-clamp-2">
-                      {space.description}
-                    </p>
                   </div>
-                </div>
-              </ScrollReveal>
-            ))}
+                </ScrollReveal>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Empowering Your Community — Spotlight Cards */}
-      <section className="bg-surface py-20 sm:py-28">
+      {/* What We Offer — Merged Programs + Amenities, Generous spacing */}
+      <section className="bg-surface py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <ScrollReveal>
-            <CommunityProgramsSpotlight />
+            <WhatWeOfferSection />
           </ScrollReveal>
         </div>
       </section>
 
-      {/* Enhanced Amenities — Spotlight Cards */}
-      <section className="bg-background py-20 sm:py-28">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <ScrollReveal>
-            <AmenitiesSpotlight />
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* CTA — Image Background */}
-      <section className="relative py-20 sm:py-28 noise-overlay overflow-hidden">
+      {/* CTA — Image Background, Most generous spacing */}
+      <section className="relative py-28 sm:py-36 noise-overlay overflow-hidden">
         <Image
           src="/images/sal-and-stone-outside.webp"
           alt=""
