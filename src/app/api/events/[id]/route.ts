@@ -127,10 +127,17 @@ export async function DELETE(
       idsToDelete.push(...groupEvents.map((e) => e.id));
     }
 
-    // Delete associated blob images for all events being deleted
+    // Delete associated blob images, but only if no surviving EventPhoto row
+    // outside the deletion set still references the same URL. Recurring events
+    // share the same blob URL across every instance's photo row, so deleting a
+    // single instance must not destroy a blob that siblings still rely on.
     for (const eventId of idsToDelete) {
       const photos = await prisma.eventPhoto.findMany({ where: { eventId } });
       for (const photo of photos) {
+        const stillReferenced = await prisma.eventPhoto.count({
+          where: { url: photo.url, eventId: { notIn: idsToDelete } },
+        });
+        if (stillReferenced > 0) continue;
         try {
           const { del } = await import("@vercel/blob");
           await del(photo.url);
