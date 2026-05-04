@@ -82,11 +82,18 @@ export async function DELETE(
       return NextResponse.json({ error: "Photo not found" }, { status: 404 });
     }
 
-    // Delete from Vercel Blob
-    try {
-      await del(photo.url);
-    } catch {
-      // Best-effort blob deletion
+    // Only delete the underlying blob if no other EventPhoto row references it.
+    // Recurring events store the same blob URL on every instance's photo row, so
+    // unconditional del() would break siblings.
+    const stillReferenced = await prisma.eventPhoto.count({
+      where: { url: photo.url, NOT: { id: photoId } },
+    });
+    if (stillReferenced === 0) {
+      try {
+        await del(photo.url);
+      } catch {
+        // Best-effort blob deletion
+      }
     }
 
     await prisma.eventPhoto.delete({ where: { id: photoId } });
