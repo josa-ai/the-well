@@ -184,7 +184,7 @@ export default function SpacesPage() {
               </svg>
             </a>
             <Link
-              href="/contact"
+              href="/event-request"
               className="inline-flex items-center gap-2 rounded-lg bg-white/15 backdrop-blur-sm border border-white/25 px-8 py-4 text-sm font-semibold uppercase tracking-wider text-white
                 hover:bg-white/25 focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2
                 active:scale-[0.97] font-[family-name:var(--font-inter)]"
